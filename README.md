@@ -15,6 +15,6 @@ More documentation will be added here.
     - [ ] Show temperature, motor speeds, temperatures
     - [ ] Control with encoder?
 
-## Optional Features
+### Optional Features
 - [ ] Flavour Displays
     - [ ] Flavour, Price, Artwork?
