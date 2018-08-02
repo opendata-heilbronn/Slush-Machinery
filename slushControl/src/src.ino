@@ -3,8 +3,8 @@
 #include <slushMachine.h>
 #include "display.h"
 
-SlushMachine slushMachineLeft = SlushMachine(0, 1, 2, 3);
-SlushMachine slushMachineRight = SlushMachine(4, 5, 6, 7);
+SlushMachine slushMachineLeft = SlushMachine(BIT_SML_MOTOR, BIT_SML_VALVE, PIN_SML_ENCODER, PIN_SML_NTC);
+SlushMachine slushMachineRight = SlushMachine(BIT_SMR_MOTOR, BIT_SMR_VALVE, PIN_SMR_ENCODER, PIN_SMR_NTC);
 
 SlushMachine slushMachines[] = {slushMachineLeft, slushMachineRight};
 uint8_t slushMachinesLength = sizeof(slushMachines)/sizeof(slushMachines[0]);
@@ -12,16 +12,25 @@ uint8_t slushMachinesLength = sizeof(slushMachines)/sizeof(slushMachines[0]);
 void ISR_slushLeft() { slushMachineLeft.isr(); }
 void ISR_slushRight() { slushMachineRight.isr(); }
 
+void initShiftRegister() {
+    pinMode(PIN_SR_CLK, OUTPUT);
+    pinMode(PIN_SR_DATA, OUTPUT);
+    pinMode(PIN_SR_LATCH, OUTPUT);
+}
+
 void setup() {
     Serial.begin(115200);
-    Serial.println("\nSlush Machinery initializing...");
+    Serial.print("\nSlush Machinery initializing... ");
     
+    initShiftRegister();
     initDisplay();
 
     slushMachineLeft.init();
     slushMachineRight.init();
-    attachInterrupt(1, ISR_slushLeft, FALLING);
-    attachInterrupt(5, ISR_slushRight, FALLING);
+    attachInterrupt(PIN_SML_ENCODER, ISR_slushLeft, FALLING);
+    attachInterrupt(PIN_SMR_ENCODER, ISR_slushRight, FALLING);
+
+    Serial.println("done.");
 }
 
 void loop() {
