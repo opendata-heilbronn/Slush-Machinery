@@ -10,6 +10,7 @@ class SlushMachine {
         void loop();
         void IRAM_ATTR isr();
         float getTemperature();
+        uint16_t getMotorRevsPerMin();
     private:
         void checkMotor();
         void setMotorState(bool state);

@@ -6,19 +6,23 @@
 LiquidCrystal_I2C lcd(0x20, 4, 5, 6);
 
 void initDisplay() {
-    lcd.begin(20,4);
-    lcd.print("Slush Machinery");
+    lcd.begin(20, 4);
+    lcd.print("  Slush Machinery");
 }
 
 uint32_t lastDisplay = 0;
 
 void loopDisplay(SlushMachine sms[]) {
-    if(lastDisplay + LCD_UPDATE_INTERVAL < millis()) {
+    if (lastDisplay + LCD_UPDATE_INTERVAL < millis()) {
         lastDisplay = millis();
-        lcd.setCursor(0, 1);
-        lcd.print(sms[0].getTemperature());
+        for (uint8_t i = 0; i < 2; i++) {
+            lcd.setCursor(i * 10, 1);
+            lcd.printf("%6.1f \xB2""C", sms[i].getTemperature());
+            lcd.setCursor(i * 10, 2);
+            lcd.printf("%6u RPM", sms[i].getMotorRevsPerMin());
+        }
     }
 }
 
-//TODO: show values on display
-//TODO: implement controls (Motor/Valve per side)
+// TODO: show values on display
+// TODO: implement controls (Motor/Valve per side)

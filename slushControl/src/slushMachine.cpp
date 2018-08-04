@@ -35,6 +35,10 @@ float SlushMachine::getTemperature() {
     return temperature;
 }
 
+uint16_t SlushMachine::getMotorRevsPerMin() {
+    return (uint16_t)(avgRevs * 60);
+}
+
 void SlushMachine::init() {}
 
 void SlushMachine::loop() {
