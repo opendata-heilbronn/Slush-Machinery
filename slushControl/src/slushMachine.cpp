@@ -1,6 +1,6 @@
 #include <Arduino.h>
-#include <globals.h>
 #include <slushMachine.h>
+#include <globals.h>
 
 SlushMachine::SlushMachine(uint8_t motorSrBit, uint8_t valveSrBit, uint8_t motorSpeedPin, uint8_t ntcPin) {
     this->motorSrBit = motorSrBit;
@@ -26,7 +26,7 @@ void SlushMachine::setValveState(bool state) { shiftRegisterWrite(valveSrBit, st
 
 // TODO: check if non-linearity of ESP32 ADC is a problem (https://www.esp32.com/viewtopic.php?f=19&t=2881&start=10#p13739)
 // convert temperature of NTC using the simplified b parameter Steinhart equation (https://en.wikipedia.org/wiki/Thermistor#B_or_%CE%B2_parameter_equation)
-void SlushMachine::getTemperature() {
+float SlushMachine::getTemperature() {
     uint16_t adc = analogRead(ntcPin);
     float ntcResistance = NTC_DIVIDER_RESISTANCE / ((4095 / (float)adc) - 1);
     

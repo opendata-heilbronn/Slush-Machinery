@@ -1,4 +1,4 @@
-#include "config.h"
+#include "globals.h"
 #include <Arduino.h>
 #include <slushMachine.h>
 #include "display.h"
@@ -34,6 +34,7 @@ void setup() {
 }
 
 void loop() {
+    loopDisplay(slushMachines);
     slushMachineLeft.loop();
     slushMachineRight.loop();
 }

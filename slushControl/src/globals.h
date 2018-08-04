@@ -1,17 +1,12 @@
 #pragma once
+#ifndef GLOBALS_H
+#define GLOBALS_H
 
 #include "config.h"
 #include <Arduino.h>
 
-uint8_t shiftRegisterState = 0;
+extern uint8_t shiftRegisterState;
 
-void shiftRegisterWrite(uint8_t bit, bool state) {
-    if (state)
-        shiftRegisterState |= (1 << bit);
-    else
-        shiftRegisterState &= ~(1 << bit);
+extern void shiftRegisterWrite(uint8_t bit, bool state);
 
-    digitalWrite(PIN_SR_LATCH, LOW);
-    shiftOut(PIN_SR_DATA, PIN_SR_CLK, MSBFIRST, shiftRegisterState);
-    digitalWrite(PIN_SR_LATCH, HIGH);
-}
+#endif
