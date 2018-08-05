@@ -2,6 +2,7 @@
 #include <Arduino.h>
 #include <slushMachine.h>
 #include "display.h"
+#include "webInterface.h"
 
 SlushMachine slushMachineLeft = SlushMachine(BIT_SML_MOTOR, BIT_SML_VALVE, PIN_SML_ENCODER, PIN_SML_NTC);
 SlushMachine slushMachineRight = SlushMachine(BIT_SMR_MOTOR, BIT_SMR_VALVE, PIN_SMR_ENCODER, PIN_SMR_NTC);
@@ -30,11 +31,14 @@ void setup() {
     attachInterrupt(PIN_SML_ENCODER, ISR_slushLeft, FALLING);
     attachInterrupt(PIN_SMR_ENCODER, ISR_slushRight, FALLING);
 
+    initWebInterface();
+
     Serial.println("done.");
 }
 
 void loop() {
     loopDisplay(slushMachines);
+    loopWebInterface();
     slushMachineLeft.loop();
     slushMachineRight.loop();
 }
