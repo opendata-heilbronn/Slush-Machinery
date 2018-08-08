@@ -3,6 +3,7 @@
 #include <WiFiClient.h>
 #include <WebServer.h>
 #include <ESPmDNS.h>
+#include "config.h"
 
 const char MAIN_page[] PROGMEM = R"=====(
 <HTML>
@@ -19,14 +20,13 @@ const char MAIN_page[] PROGMEM = R"=====(
 
 WebServer server(80);
 
-#define SSID "Slush Machinery"
-#define AP_PASS "testpasswordpleasereplace"
+
 IPAddress apIp(10, 0, 0, 1);
 
 void initWebInterface() {
     WiFi.mode(WIFI_AP);
     WiFi.softAPConfig(apIp, apIp, IPAddress(255, 255, 255, 0));
-    WiFi.softAP(SSID, AP_PASS);
+    WiFi.softAP(AP_SSID, AP_PASS);
 
     server.on("/", []() {
         server.send(200, "text/html", String(MAIN_page));

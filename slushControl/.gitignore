@@ -6,3 +6,4 @@
 .vscode
 lib/readme.txt
 .travis.yml
+src/config.h
