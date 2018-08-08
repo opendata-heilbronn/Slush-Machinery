@@ -6,6 +6,8 @@ void shiftRegisterWrite(uint8_t bit, bool state) {
     else
         shiftRegisterState &= ~(1 << bit);
 
+    Serial.println(shiftRegisterState, 2);
+
     digitalWrite(PIN_SR_LATCH, LOW);
     shiftOut(PIN_SR_DATA, PIN_SR_CLK, MSBFIRST, shiftRegisterState);
     digitalWrite(PIN_SR_LATCH, HIGH);

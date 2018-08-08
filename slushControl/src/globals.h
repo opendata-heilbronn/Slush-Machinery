@@ -5,20 +5,22 @@
 #include "config.h"
 #include <Arduino.h>
 
+#define NUM_SLUSH_MACHINES 2
+
 // Shift register pins
 #define PIN_SR_CLK      4
 #define PIN_SR_DATA     15
 #define PIN_SR_LATCH    2
 
 // Left slush machine defines, BIT_ are pins on the shift register, PIN_ are GPIOs on the ESP32
-#define BIT_SML_MOTOR   0
+#define BIT_SML_MOTOR   7
 #define BIT_SML_VALVE   0
 #define PIN_SML_NTC     34
 #define PIN_SML_ENCODER 39
 
 // Right slush machine defines
-#define BIT_SMR_MOTOR   0
-#define BIT_SMR_VALVE   0
+#define BIT_SMR_MOTOR   6
+#define BIT_SMR_VALVE   5
 #define PIN_SMR_NTC     35
 #define PIN_SMR_ENCODER 36
 

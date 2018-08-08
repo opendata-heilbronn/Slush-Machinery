@@ -4,3 +4,6 @@
 
 #define AP_SSID "Slush Machinery"
 #define AP_PASS "testpasswordPLEASEREPLACE"
+
+// OTA password, leave empty for none
+#define OTA_PASSWORD "changeMe"
