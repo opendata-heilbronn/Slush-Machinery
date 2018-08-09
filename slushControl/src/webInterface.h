@@ -29,7 +29,8 @@ const char index_begin[] PROGMEM = R"=====(
         <a href="?relaisId=6&state=1"><button>Relais 7 An</button></a><br><br>
         <a href="?relaisId=7&state=0"><button>Relais 8 Aus</button></a>
         <a href="?relaisId=7&state=1"><button>Relais 8 An</button></a><br><br>
-        TEXTTEMPERATURESENSORS
+        <p>TEXTTEMPERATURESENSORS</p>
+        <p>TEXTRPMS</p>
     </body>
 </html>
 )=====";
@@ -68,7 +69,8 @@ void initWebInterface(SlushMachine *slushMachineArr[]) {
 
     server.on("/", []() {
         String html = String(index_begin);
-        //html.replace("TEXTTEMPERATURESENSORS", String(sms[0].getTemperature()) + "°C<br>" + sms[1].getTemperature());
+        html.replace("TEXTTEMPERATURESENSORS", String(sms[0]->getTemperature()) + "°C<br>" + sms[1]->getTemperature() + "°C");
+        html.replace("TEXTRPMS", String(sms[0]->getMotorRevsPerMin()) + "RPM<br>" + sms[1]->getMotorRevsPerMin() + "RPM");
         parseParameters();
         server.send(200, "text/html", html);
     });
