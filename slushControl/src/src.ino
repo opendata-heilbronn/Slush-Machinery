@@ -8,7 +8,7 @@
 SlushMachine slushMachineLeft = SlushMachine(BIT_SML_MOTOR, BIT_SML_VALVE, PIN_SML_ENCODER, PIN_SML_NTC);
 SlushMachine slushMachineRight = SlushMachine(BIT_SMR_MOTOR, BIT_SMR_VALVE, PIN_SMR_ENCODER, PIN_SMR_NTC);
 
-SlushMachine slushMachines[NUM_SLUSH_MACHINES] = {slushMachineLeft, slushMachineRight};
+SlushMachine *slushMachines[NUM_SLUSH_MACHINES] = {&slushMachineLeft, &slushMachineRight};
 uint8_t slushMachinesLength = sizeof(slushMachines)/sizeof(slushMachines[0]);
 
 void ISR_slushLeft() { slushMachineLeft.isr(); }

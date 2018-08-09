@@ -24,5 +24,5 @@ class SlushMachine {
         uint16_t revsPerSec;
         uint32_t lastMotorCheck = 0;
         bool motorState = 0, valveState = 0;
-        volatile float avgRevs = 0;
+        float avgRevs;
 };

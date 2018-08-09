@@ -21,6 +21,14 @@ const char index_begin[] PROGMEM = R"=====(
         <a href="?relaisId=2&state=1"><button>Motor Rechts An</button></a><br><br>
         <a href="?relaisId=3&state=0"><button>Kühlung Rechts Aus</button></a>
         <a href="?relaisId=3&state=1"><button>Kühlung Rechts An</button></a><br><br>
+        <a href="?relaisId=4&state=0"><button>Komressor Aus</button></a>
+        <a href="?relaisId=4&state=1"><button>Kompressor An</button></a><br><br>
+        <a href="?relaisId=5&state=0"><button>Lüfter Aus</button></a>
+        <a href="?relaisId=5&state=1"><button>Lüfter An</button></a><br><br>
+        <a href="?relaisId=6&state=0"><button>Relais 7 Aus</button></a>
+        <a href="?relaisId=6&state=1"><button>Relais 7 An</button></a><br><br>
+        <a href="?relaisId=7&state=0"><button>Relais 8 Aus</button></a>
+        <a href="?relaisId=7&state=1"><button>Relais 8 An</button></a><br><br>
         TEXTTEMPERATURESENSORS
     </body>
 </html>
@@ -29,7 +37,7 @@ const char index_begin[] PROGMEM = R"=====(
 WebServer server(80);
 IPAddress apIp(10, 0, 0, 1);
 
-SlushMachine *sms;
+SlushMachine **sms;
 
 void parseParameters() {
     
@@ -37,18 +45,22 @@ void parseParameters() {
         uint8_t relaisId = server.arg("relaisId").toInt();
         bool relaisState = server.arg("state").toInt();
         // shiftRegisterWrite(relaisId, relaisState);
-        
+
         //just a test
         switch(relaisId) {
-            case 0: sms[0].setMotorState(relaisState); break; 
-            case 1: sms[0].setValveState(relaisState); break;
-            case 2: sms[1].setMotorState(relaisState); break;
-            case 3: sms[1].setValveState(relaisState); break;
+            case 0: sms[0]->setMotorState(relaisState); break; 
+            case 1: sms[0]->setValveState(relaisState); break;
+            case 2: sms[1]->setMotorState(relaisState); break;
+            case 3: sms[1]->setValveState(relaisState); break;
+            case 4: shiftRegisterWrite(BIT_COMPRESSOR, relaisState); break;
+            case 5: shiftRegisterWrite(BIT_FAN, relaisState); break;
+            case 6: shiftRegisterWrite(2, relaisState); break;
+            case 7: shiftRegisterWrite(1, relaisState); break;
         }
     }
 }
 
-void initWebInterface(SlushMachine slushMachineArr[]) {
+void initWebInterface(SlushMachine *slushMachineArr[]) {
     sms = slushMachineArr;
     WiFi.mode(WIFI_AP);
     WiFi.softAPConfig(apIp, apIp, IPAddress(255, 255, 255, 0));

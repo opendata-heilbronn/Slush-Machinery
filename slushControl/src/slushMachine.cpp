@@ -15,9 +15,6 @@ void SlushMachine::checkMotor() {
     revsPerSec = motorRevs * (1000 / MOTOR_CHECK_INTERVAL);
     avgRevs = avgRevs * (1 - MOTOR_REVS_AVG_FACTOR) + (float)revsPerSec * MOTOR_REVS_AVG_FACTOR;
 
-    Serial.print("      ");
-    Serial.println((uint16_t)(avgRevs * 60));
-
     // TODO: motor stall check
 
     // TODO: consistency control
@@ -49,7 +46,6 @@ float SlushMachine::getTemperature() {
 }
 
 uint16_t SlushMachine::getMotorRevsPerMin() {
-    //WHY THE F IS THIS ALWAYS ZERO ?! TODO: INVESTIGATE
     Serial.println((uint16_t)(avgRevs * 60));
     return (uint16_t)(avgRevs * 60);
 }
