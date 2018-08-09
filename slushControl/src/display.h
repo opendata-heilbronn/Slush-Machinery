@@ -1,6 +1,7 @@
 #include <LiquidCrystal_I2C.h>
 #include <Wire.h>
 #include "globals.h"
+#include <SlushMachine.h>
 
 #define LCD_UPDATE_INTERVAL 250
 
