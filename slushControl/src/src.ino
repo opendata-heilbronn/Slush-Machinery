@@ -48,6 +48,8 @@ void setup() {
 
     initWebInterface(slushMachines);
 
+    analogSetAttenuation(ADC_6db);
+
     Serial.println("done.");
 }
 

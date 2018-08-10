@@ -7,6 +7,11 @@
 
 #define NUM_SLUSH_MACHINES 2
 
+//ADC scaling (calculate which adc value a full 3.3V would give if the range was there)
+#define ADC_FULLSCALE_VALUE     7083
+//ADC offset in ADC steps
+#define ADC_OFFSET              221
+
 // Shift register pins
 #define PIN_SR_CLK      4
 #define PIN_SR_DATA     15
@@ -30,13 +35,13 @@
 
 // Thermistor config
 // beta coefficient of the thermistor (todo: tune)
-#define NTC_B_COEFFICIENT       3950
+#define NTC_B_COEFFICIENT       3950 
 // nominal thermistor temperature
 #define NTC_NOMINAL_TEMPERATURE 25
 // nominal thermistor resistance
 #define NTC_NOMINAL_RESISTANCE  1000
 // voltage divider resistor
-#define NTC_DIVIDER_RESISTANCE  1000
+#define NTC_DIVIDER_RESISTANCE  4700
 
 extern uint8_t shiftRegisterState;
 

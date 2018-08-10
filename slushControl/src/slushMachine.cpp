@@ -35,15 +35,19 @@ void SlushMachine::setValveState(bool state) {
 // TODO: check if non-linearity of ESP32 ADC is a problem (https://www.esp32.com/viewtopic.php?f=19&t=2881&start=10#p13739)
 // convert temperature of NTC using the simplified b parameter Steinhart equation
 // (https://en.wikipedia.org/wiki/Thermistor#B_or_%CE%B2_parameter_equation)
-float SlushMachine::getTemperature() {
-    uint16_t adc = analogRead(ntcPin);
-    float ntcResistance = NTC_DIVIDER_RESISTANCE / ((4095 / (float)adc) - 1);
+float SlushMachine::readTemperature() {
+    uint16_t rawAdc = analogRead(ntcPin);
 
-    //                   1 / ((               ln(R/Ro)                       * 1/B              ) +    (1/To) )
+    float ntcResistance = NTC_DIVIDER_RESISTANCE / ((ADC_FULLSCALE_VALUE / ((float)rawAdc + ADC_OFFSET)) - 1);
+
+    //1 / ((ln(R/Ro) * 1/B) + (1/To))
     float temperature =
         (1 / (((log(ntcResistance / NTC_NOMINAL_RESISTANCE)) / NTC_B_COEFFICIENT) + (1.0 / (NTC_NOMINAL_TEMPERATURE + 273.15)))) - 273.15;
+    Serial.printf("%i %i %f %f", rawAdc, adc, ntcResistance, temperature);
     return temperature;
 }
+
+float SlushMachine::getTemperature() { return avgTemp; }
 
 uint16_t SlushMachine::getMotorRevsPerMin() {
     Serial.println((uint16_t)(avgRevs * 60));
@@ -66,5 +70,11 @@ void SlushMachine::loop() {
     if (lastMotorCheck + MOTOR_CHECK_INTERVAL < now) {
         lastMotorCheck = now;
         checkMotor();
+    }
+
+    if (lastTempRead + TEMP_READ_INTERVAL < now) {
+        lastTempRead = now;
+        float temp = readTemperature();
+        avgTemp = avgTemp * (1 - TEMP_AVG_FACTOR) + temp * TEMP_AVG_FACTOR;
     }
 }
