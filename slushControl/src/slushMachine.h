@@ -6,6 +6,10 @@
 
 #define TEMP_READ_INTERVAL      50
 #define TEMP_AVG_FACTOR         0.05
+#define TEMP_INIT_SETPOINT      -5
+
+// time window for relais operation
+#define TEMP_CONTROL_WINDOW     10000
 
 class SlushMachine {
     public:
@@ -22,6 +26,7 @@ class SlushMachine {
     private:
         void checkMotor();
         float readTemperature();
+        void temperatureController();
         
         uint8_t motorSrBit, valveSrBit, motorSpeedPin, ntcPin;
         volatile uint16_t motorRevs = 0;
@@ -29,4 +34,9 @@ class SlushMachine {
         uint32_t lastMotorCheck = 0, lastTempRead = 0;
         bool motorState = 0, valveState = 0;
         float avgRevs, avgTemp;
+        
+        float temperatureSetPoint = TEMP_INIT_SETPOINT;
+        uint32_t lastPIDTime;
+        double errSum, lastError;
+        uint16_t coolingOnTime;
 };

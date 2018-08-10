@@ -49,6 +49,24 @@ float SlushMachine::getTemperature() {
     return avgTemp;
 }
 
+void SlushMachine::temperatureController() {
+    double inputTemp = avgTemp;
+
+    uint32_t now = millis();
+    double timeDiff = (now - lastPIDTime);
+
+    double error = temperatureSetPoint - inputTemp;
+    errSum += error;
+    double dErr = (err - lastError);
+
+    double output = kp * error + ki * errSum + kd * dErr;
+
+    lastError = error;
+
+    //scale output to relais window time (probably)
+    coolingOnTime = constrain(TEMP_CONTROL_WINDOW * output, 0, TEMP_CONTROL_WINDOW);
+}
+
 uint16_t SlushMachine::getMotorRevsPerMin() {
     return (uint16_t)(avgRevs * 60);
 }
@@ -76,4 +94,18 @@ void SlushMachine::loop() {
         float temp = readTemperature();
         avgTemp = avgTemp * (1 - TEMP_AVG_FACTOR) + temp * TEMP_AVG_FACTOR;
     }
+
+    if(lastTempControl + TEMP_CONTROL_WINDOW < now) {
+        lastTempControl = now;
+        temperatureController();
+        if(coolingOnTime > 0) {
+            setValveState(true);
+        }
+    }
+    // turn valve back off
+    if((now - lastTempControl) > coolingOnTime && valveState) {
+        setValveState(false);
+    }
+
+    
 }

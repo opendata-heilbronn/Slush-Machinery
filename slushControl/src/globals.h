@@ -42,4 +42,6 @@ extern uint8_t shiftRegisterState;
 
 extern void shiftRegisterWrite(uint8_t bit, bool state);
 
+double kp = 2, ki = 5, kd = 0;
+
 #endif
