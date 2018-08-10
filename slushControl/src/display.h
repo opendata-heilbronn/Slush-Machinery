@@ -1,7 +1,7 @@
 #include <LiquidCrystal_I2C.h>
 #include <Wire.h>
 #include "globals.h"
-#include <SlushMachine.h>
+#include <slushMachine.h>
 
 #define LCD_UPDATE_INTERVAL 250
 
@@ -23,7 +23,7 @@ void loopDisplay(SlushMachine *sms[]) {
             lcd.setCursor(i * 10, 2);
             lcd.printf("%6u RPM", sms[i]->getMotorRevsPerMin());
             lcd.setCursor(i*10, 3);
-            lcd.printf(" M:%i C:%i", sms[i]->getMotorState(), sms[i]->getValveState());
+            lcd.printf(" M:%i C:%i", sms[i]->getMotorState(), sms[i]->getCoolingState());
         }
     }
 }

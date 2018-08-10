@@ -32,6 +32,8 @@ void SlushMachine::setValveState(bool state) {
     shiftRegisterWrite(valveSrBit, state);
 }
 
+void SlushMachine::setCooling(bool state) { coolingEnabled = state; }
+
 // TODO: check if non-linearity of ESP32 ADC is a problem (https://www.esp32.com/viewtopic.php?f=19&t=2881&start=10#p13739)
 // convert temperature of NTC using the simplified b parameter Steinhart equation
 // (https://en.wikipedia.org/wiki/Thermistor#B_or_%CE%B2_parameter_equation)
@@ -40,23 +42,42 @@ float SlushMachine::readTemperature() {
 
     float ntcResistance = NTC_DIVIDER_RESISTANCE / ((ADC_FULLSCALE_VALUE / ((float)rawAdc + ADC_OFFSET)) - 1);
 
-    //1 / ((ln(R/Ro) * 1/B) + (1/To))
+    // 1 / ((ln(R/Ro) * 1/B) + (1/To))
     float temperature =
         (1 / (((log(ntcResistance / NTC_NOMINAL_RESISTANCE)) / NTC_B_COEFFICIENT) + (1.0 / (NTC_NOMINAL_TEMPERATURE + 273.15)))) - 273.15;
-    Serial.printf("%i %i %f %f", rawAdc, adc, ntcResistance, temperature);
     return temperature;
 }
 
 float SlushMachine::getTemperature() { return avgTemp; }
 
-uint16_t SlushMachine::getMotorRevsPerMin() {
-    Serial.println((uint16_t)(avgRevs * 60));
-    return (uint16_t)(avgRevs * 60);
+void SlushMachine::temperatureController() {
+    double inputTemp = avgTemp;
+    uint32_t now = millis();
+    double timeDiff = (now - lastPIDTime);
+
+    double error = -(temperatureSetPoint - inputTemp);
+    errSum += error;
+    errSum = constrain(errSum, OUT_MIN, OUT_MAX);
+    double dErr = (error - lastError);
+
+    double output = kp * error + ki * errSum + kd * dErr;
+    output = constrain(output, OUT_MIN, OUT_MAX);
+    lastError = error;
+
+    // scale output to relais window time (probably)
+
+    coolingOnTime = output;
+
+    Serial.printf("err: %6.2f - errSum: %6.2f - output: %6.2f - coolTime: %6i\n", error, errSum, output, coolingOnTime);
 }
+
+uint16_t SlushMachine::getMotorRevsPerMin() { return (uint16_t)(avgRevs * 60); }
 
 bool SlushMachine::getMotorState() { return motorState; }
 
 bool SlushMachine::getValveState() { return valveState; }
+
+bool SlushMachine::getCoolingState() { return coolingEnabled; }
 
 void SlushMachine::init() {
     pinMode(motorSpeedPin, INPUT);
@@ -76,5 +97,17 @@ void SlushMachine::loop() {
         lastTempRead = now;
         float temp = readTemperature();
         avgTemp = avgTemp * (1 - TEMP_AVG_FACTOR) + temp * TEMP_AVG_FACTOR;
+    }
+
+    if (lastTempControl + TEMP_CONTROL_WINDOW < now && coolingEnabled) {
+        lastTempControl = now;
+        temperatureController();
+        if (coolingOnTime > 0) {
+            setValveState(true);
+        }
+    }
+    // turn valve back off
+    if ((now - lastTempControl) > coolingOnTime && valveState) {
+        setValveState(false);
     }
 }
