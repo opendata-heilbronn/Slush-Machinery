@@ -8,13 +8,15 @@ More documentation will be added here.
 
 ## ToDos
 - [ ] Control the machine
-    - [ ] Motors and valves
+    - [x] Motors and valves
     - [ ] Consistency control based on motor speed (encoders)
     - [ ] Emergency shut off when motor stalls
-- [ ] Debug Display
-    - [ ] Show temperature, motor speeds, temperatures
+    - [ ] Temperature regulation
+- [x] Debug Display
+    - [x] Show temperature, motor speeds
     - [ ] Control with encoder?
 
 ### Optional Features
 - [ ] Flavour Displays
     - [ ] Flavour, Price, Artwork?
+- [x] Simple web interface for admin control
