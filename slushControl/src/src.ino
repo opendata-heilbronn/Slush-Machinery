@@ -51,12 +51,13 @@ void setup() {
     Serial.println("done.");
 }
 
-uint32_t lastShiftRegisterWrite = 0, lastDisplayInit = 0;
+uint32_t lastShiftRegisterWrite = 0, lastDisplayInit = 0, lastDebugOutput = 0;
 
 void loop() {
     loopDisplay(slushMachines);
     loopWebInterface();
     loopOTA();
+
     slushMachineLeft.loop();
     slushMachineRight.loop();
 
@@ -70,5 +71,17 @@ void loop() {
     if (millis() - lastDisplayInit >= 60000) {
         lastDisplayInit = millis();
         initDisplay();
+    }
+
+    if (millis() - lastDebugOutput >= 100) {
+        lastDebugOutput = millis();
+        Serial.printf("%f %i %i %f %i %i", 
+            slushMachineLeft.getTemperature(), 
+            analogRead(PIN_SML_NTC),
+            slushMachineLeft.getMotorRevsPerMin() / 60, 
+            slushMachineRight.getTemperature(), 
+            analogRead(PIN_SMR_NTC),
+            slushMachineRight.getMotorRevsPerMin() / 60,
+        );
     }
 }
