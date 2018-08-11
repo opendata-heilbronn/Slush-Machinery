@@ -5,61 +5,15 @@
 #include <ESPmDNS.h>
 #include "globals.h"
 
-const char index_begin[] PROGMEM = R"=====(
-<html>
-	<head>
-			<title>Slush Machinery</title>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width">
-	</head>
-    <body>
-        <a href="?relaisId=0&state=0"><button>Motor Links Aus</button></a>
-        <a href="?relaisId=0&state=1"><button>Motor Links An</button></a><br><br>
-        <a href="?relaisId=1&state=0"><button>Kühlung Links Aus</button></a>
-        <a href="?relaisId=1&state=1"><button>Kühlung Links An</button></a><br><br>
-        <a href="?relaisId=2&state=0"><button>Motor Rechts Aus</button></a>
-        <a href="?relaisId=2&state=1"><button>Motor Rechts An</button></a><br><br>
-        <a href="?relaisId=3&state=0"><button>Kühlung Rechts Aus</button></a>
-        <a href="?relaisId=3&state=1"><button>Kühlung Rechts An</button></a><br><br>
-        <a href="?relaisId=4&state=0"><button>Komressor Aus</button></a>
-        <a href="?relaisId=4&state=1"><button>Kompressor An</button></a><br><br>
-        <a href="?relaisId=5&state=0"><button>Lüfter Aus</button></a>
-        <a href="?relaisId=5&state=1"><button>Lüfter An</button></a><br><br>
-        <a href="?relaisId=6&state=0"><button>Relais 7 Aus</button></a>
-        <a href="?relaisId=6&state=1"><button>Relais 7 An</button></a><br><br>
-        <a href="?relaisId=7&state=0"><button>Relais 8 Aus</button></a>
-        <a href="?relaisId=7&state=1"><button>Relais 8 An</button></a><br><br>
-        <p>TEXTTEMPERATURESENSORS</p>
-        <p>TEXTRPMS</p>
-    </body>
-</html>
-)=====";
+// yes, this works. C++11 magic
+const char index_begin[] PROGMEM = 
+#include "website.html"
+;
 
 WebServer server(80);
 IPAddress apIp(10, 0, 0, 1);
 
 SlushMachine **sms;
-
-void parseParameters() {
-    
-    if(server.hasArg("relaisId") && server.hasArg("state")) {
-        uint8_t relaisId = server.arg("relaisId").toInt();
-        bool relaisState = server.arg("state").toInt();
-        // shiftRegisterWrite(relaisId, relaisState);
-
-        //just a test
-        switch(relaisId) {
-            case 0: sms[0]->setMotorState(relaisState); break; 
-            case 1: sms[0]->setCooling(relaisState); break;
-            case 2: sms[1]->setMotorState(relaisState); break;
-            case 3: sms[1]->setCooling(relaisState); break;
-            case 4: shiftRegisterWrite(BIT_COMPRESSOR, relaisState); break;
-            case 5: shiftRegisterWrite(BIT_FAN, relaisState); break;
-            case 6: shiftRegisterWrite(2, relaisState); break;
-            case 7: shiftRegisterWrite(1, relaisState); break;
-        }
-    }
-}
 
 void initWebInterface(SlushMachine *slushMachineArr[]) {
     sms = slushMachineArr;
@@ -69,10 +23,51 @@ void initWebInterface(SlushMachine *slushMachineArr[]) {
 
     server.on("/", []() {
         String html = String(index_begin);
-        html.replace("TEXTTEMPERATURESENSORS", String(sms[0]->getTemperature()) + "°C<br>" + sms[1]->getTemperature() + "°C");
-        html.replace("TEXTRPMS", String(sms[0]->getMotorRevsPerMin()) + "RPM<br>" + sms[1]->getMotorRevsPerMin() + "RPM");
-        parseParameters();
+        html.replace("REPLACE_TEMPERATURES", String(sms[0]->getTemperature()) + "°C<br>" + sms[1]->getTemperature() + "°C");
+        html.replace("REPLACE_RPMS", String(sms[0]->getMotorRevsPerMin()) + "RPM<br>" + sms[1]->getMotorRevsPerMin() + "RPM");
+        html.replace("REPLACE_TEMP", String(sms[0]->getSetTemperature()));
+        html.replace("REPLACE_KP", String(sms[0]->getPID(0)));
+        html.replace("REPLACE_KI", String(sms[0]->getPID(1)));
+        html.replace("REPLACE_KD", String(sms[0]->getPID(2)));
+
         server.send(200, "text/html", html);
+    });
+
+    server.on("/setOutput", []() {
+        if (server.hasArg("relaisId") && server.hasArg("state")) {
+            uint8_t relaisId = server.arg("relaisId").toInt();
+            bool relaisState = server.arg("state").toInt();
+            // shiftRegisterWrite(relaisId, relaisState);
+
+            switch(relaisId) {
+                case 0: sms[0]->setMotorState(relaisState); break; 
+                case 1: sms[0]->setCooling(relaisState); break;
+                case 2: sms[1]->setMotorState(relaisState); break;
+                case 3: sms[1]->setCooling(relaisState); break;
+                case 4: shiftRegisterWrite(BIT_COMPRESSOR, relaisState); break;
+                case 5: shiftRegisterWrite(BIT_FAN, relaisState); break;
+                case 6: shiftRegisterWrite(2, relaisState); break;
+                case 7: shiftRegisterWrite(1, relaisState); break;
+            }
+        }
+
+        // redirect back to home page
+        server.sendHeader("Location", String("/"), true);
+        server.send(302, "text/plain", "");
+    });
+
+    server.on("/configValues", []() {
+        // parse parameters naively and hope that it works
+        float temp = server.arg("temp").toFloat();
+        double kp = server.arg("kp").toFloat(), ki = server.arg("ki").toFloat(), kd = server.arg("kd").toFloat();
+        sms[0]->setTemperature(temp);
+        sms[1]->setTemperature(temp);
+        sms[0]->setPids(kp, ki, kd);
+        sms[1]->setPids(kp, ki, kd);
+
+        // redirect back to home page
+        server.sendHeader("Location", String("/"), true);
+        server.send(302, "text/plain", "");
     });
 
     server.begin();

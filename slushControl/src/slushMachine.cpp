@@ -34,7 +34,6 @@ void SlushMachine::setValveState(bool state) {
 
 void SlushMachine::setCooling(bool state) { coolingEnabled = state; }
 
-// TODO: check if non-linearity of ESP32 ADC is a problem (https://www.esp32.com/viewtopic.php?f=19&t=2881&start=10#p13739)
 // convert temperature of NTC using the simplified b parameter Steinhart equation
 // (https://en.wikipedia.org/wiki/Thermistor#B_or_%CE%B2_parameter_equation)
 float SlushMachine::readTemperature() {
@@ -78,6 +77,29 @@ bool SlushMachine::getMotorState() { return motorState; }
 bool SlushMachine::getValveState() { return valveState; }
 
 bool SlushMachine::getCoolingState() { return coolingEnabled; }
+
+void SlushMachine::setTemperature(float temp) { temperatureSetPoint = temp; }
+
+float SlushMachine::getSetTemperature() { return temperatureSetPoint; }
+
+double SlushMachine::getPID(uint8_t id) {
+    switch (id) {
+    case 0:
+        return kp;
+    case 1:
+        return ki;
+    case 2:
+        return kd;
+    default:
+        return 0;
+    }
+}
+
+void SlushMachine::setPids(double pkp, double pki, double pkd) {
+    kp = pkp;
+    ki = pki;
+    kd = pkd;
+}
 
 void SlushMachine::init() {
     pinMode(motorSpeedPin, INPUT);

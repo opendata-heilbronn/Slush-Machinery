@@ -23,10 +23,12 @@ void loopDisplay(SlushMachine *sms[]) {
             lcd.setCursor(i * 10, 2);
             lcd.printf("%6u RPM", sms[i]->getMotorRevsPerMin());
             lcd.setCursor(i*10, 3);
-            lcd.printf(" M:%i C:%i", sms[i]->getMotorState(), sms[i]->getCoolingState());
+            lcd.printf("M%i C%i T%-3.0f", sms[i]->getMotorState(), sms[i]->getCoolingState(), sms[i]->getSetTemperature());
         }
+
+        lcd.setCursor(0, 0);
+        lcd.printf("E: %7.1f O: %5i", sms[0]->errSum, sms[0]->coolingOnTime);
     }
 }
 
-// TODO: show values on display
 // TODO: implement controls (Motor/Valve per side)
