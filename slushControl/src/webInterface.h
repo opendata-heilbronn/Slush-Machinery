@@ -26,9 +26,6 @@ void initWebInterface(SlushMachine *slushMachineArr[]) {
         html.replace("REPLACE_TEMPERATURES", String(sms[0]->getTemperature()) + "°C<br>" + sms[1]->getTemperature() + "°C");
         html.replace("REPLACE_RPMS", String(sms[0]->getMotorRevsPerMin()) + "RPM<br>" + sms[1]->getMotorRevsPerMin() + "RPM");
         html.replace("REPLACE_TEMP", String(sms[0]->getSetTemperature()));
-        html.replace("REPLACE_KP", String(sms[0]->getPID(0)));
-        html.replace("REPLACE_KI", String(sms[0]->getPID(1)));
-        html.replace("REPLACE_KD", String(sms[0]->getPID(2)));
 
         server.send(200, "text/html", html);
     });
@@ -59,11 +56,8 @@ void initWebInterface(SlushMachine *slushMachineArr[]) {
     server.on("/configValues", []() {
         // parse parameters naively and hope that it works
         float temp = server.arg("temp").toFloat();
-        double kp = server.arg("kp").toFloat(), ki = server.arg("ki").toFloat(), kd = server.arg("kd").toFloat();
         sms[0]->setTemperature(temp);
         sms[1]->setTemperature(temp);
-        sms[0]->setPids(kp, ki, kd);
-        sms[1]->setPids(kp, ki, kd);
 
         // redirect back to home page
         server.sendHeader("Location", String("/"), true);

@@ -11,13 +11,6 @@
 // time window for relais operation
 #define TEMP_CONTROL_WINDOW     10000
 
-// PID tmperature control tuning
-#define DEFAULT_KP  1000
-#define DEFAULT_KI  50
-#define DEFAULT_KD  0
-#define OUT_MIN     0
-#define OUT_MAX     TEMP_CONTROL_WINDOW
-
 class SlushMachine {
     public:
         SlushMachine(uint8_t motorSrBit, uint8_t valveSrBit, uint8_t motorSpeedPin, uint8_t ntcPin);
@@ -34,11 +27,7 @@ class SlushMachine {
         void setCooling(bool state);
         void setTemperature(float temp);
         float getSetTemperature();
-        double getPID(uint8_t id);
-        void setPids(double pkp, double pki, double pkd);
 
-        double errSum; 
-        uint16_t coolingOnTime;
     private:
         void checkMotor();
         float readTemperature();
@@ -51,9 +40,6 @@ class SlushMachine {
         bool motorState = 0, valveState = 0;
         float avgRevs, avgTemp;
         bool coolingEnabled = false;
-
         float temperatureSetPoint = TEMP_INIT_SETPOINT;
-        uint32_t lastPIDTime;
-        double lastError;
-        double kp = DEFAULT_KP, ki = DEFAULT_KI, kd = DEFAULT_KD;
+
 };

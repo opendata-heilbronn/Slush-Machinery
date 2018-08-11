@@ -49,27 +49,6 @@ float SlushMachine::readTemperature() {
 
 float SlushMachine::getTemperature() { return avgTemp; }
 
-void SlushMachine::temperatureController() {
-    double inputTemp = avgTemp;
-    uint32_t now = millis();
-    double timeDiff = (now - lastPIDTime);
-
-    double error = -(temperatureSetPoint - inputTemp);
-    errSum += error;
-    errSum = constrain(errSum, OUT_MIN, OUT_MAX);
-    double dErr = (error - lastError);
-
-    double output = kp * error + ki * errSum + kd * dErr;
-    output = constrain(output, OUT_MIN, OUT_MAX);
-    lastError = error;
-
-    // scale output to relais window time (probably)
-
-    coolingOnTime = output;
-
-    Serial.printf("err: %6.2f - errSum: %6.2f - output: %6.2f - coolTime: %6i\n", error, errSum, output, coolingOnTime);
-}
-
 uint16_t SlushMachine::getMotorRevsPerMin() { return (uint16_t)(avgRevs * 60); }
 
 bool SlushMachine::getMotorState() { return motorState; }
@@ -81,25 +60,6 @@ bool SlushMachine::getCoolingState() { return coolingEnabled; }
 void SlushMachine::setTemperature(float temp) { temperatureSetPoint = temp; }
 
 float SlushMachine::getSetTemperature() { return temperatureSetPoint; }
-
-double SlushMachine::getPID(uint8_t id) {
-    switch (id) {
-    case 0:
-        return kp;
-    case 1:
-        return ki;
-    case 2:
-        return kd;
-    default:
-        return 0;
-    }
-}
-
-void SlushMachine::setPids(double pkp, double pki, double pkd) {
-    kp = pkp;
-    ki = pki;
-    kd = pkd;
-}
 
 void SlushMachine::init() {
     pinMode(motorSpeedPin, INPUT);
@@ -121,15 +81,9 @@ void SlushMachine::loop() {
         avgTemp = avgTemp * (1 - TEMP_AVG_FACTOR) + temp * TEMP_AVG_FACTOR;
     }
 
+    // simple bang-bang temperature control
     if (lastTempControl + TEMP_CONTROL_WINDOW < now && coolingEnabled) {
         lastTempControl = now;
-        temperatureController();
-        if (coolingOnTime > 0) {
-            setValveState(true);
-        }
-    }
-    // turn valve back off
-    if ((now - lastTempControl) > coolingOnTime && valveState) {
-        setValveState(false);
+        setValveState(avgTemp > temperatureSetPoint);
     }
 }
