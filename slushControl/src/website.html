@@ -5,43 +5,79 @@ R"=====(
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width">
             <style>
+                input {
+                    width: 100%;
+                }
                 button {
                     height: 40px;
-                    width: 100%;
+                    width: 47%;
                 }
             </style>
 	</head>
     <body>
-        <table>
-            <tr><td><a href="setOutput?relaisId=0&state=0"><button>Motor Links Aus       </button></a></td>
-            <td>    <a href="setOutput?relaisId=0&state=1"><button>Motor Links An        </button></a></td></tr>
-            <tr><td><a href="setOutput?relaisId=1&state=0"><button>Kühlung Links Aus     </button></a></td>
-            <td>    <a href="setOutput?relaisId=1&state=1"><button>Kühlung Links An      </button></a></td></tr>
-            <tr><td><a href="setOutput?relaisId=2&state=0"><button>Motor Rechts Aus      </button></a></td>
-            <td>    <a href="setOutput?relaisId=2&state=1"><button>Motor Rechts An       </button></a></td></tr>
-            <tr><td><a href="setOutput?relaisId=3&state=0"><button>Kühlung Rechts Aus    </button></a></td>
-            <td>    <a href="setOutput?relaisId=3&state=1"><button>Kühlung Rechts An     </button></a></td></tr>
-            <tr><td><a href="setOutput?relaisId=4&state=0"><button>Komressor Aus         </button></a></td>
-            <td>    <a href="setOutput?relaisId=4&state=1"><button>Kompressor An         </button></a></td></tr>
-            <tr><td><a href="setOutput?relaisId=5&state=0"><button>Lüfter Aus            </button></a></td>
-            <td>    <a href="setOutput?relaisId=5&state=1"><button>Lüfter An             </button></a></td></tr>
-            <tr><td><a href="setOutput?relaisId=6&state=0"><button>Relais 7 Aus          </button></a></td>
-            <td>    <a href="setOutput?relaisId=6&state=1"><button>Relais 7 An           </button></a></td></tr>
-            <tr><td><a href="setOutput?relaisId=7&state=0"><button>Relais 8 Aus          </button></a></td>
-            <td>    <a href="setOutput?relaisId=7&state=1"><button>Relais 8 An           </button></a></td></tr>
-        </table>
-        <p>REPLACE_TEMPERATURES</p>
-        <p>REPLACE_RPMS</p>
         <form action="/configValues">
             <table>
-                <tr><td>Temperatur</td>
-                <td><input type="number" name="temp" value="REPLACE_TEMP"></td></tr>
-                <tr><td>"PWM" ms</td>
-                <td><input type="number" name="pwmFreq" value="REPLACE_PWMFREQ"></td></tr>
-                <tr><td>"PWM" duty</td>
-                <td><input type="number" name="pwmDuty" value="REPLACE_PWMDUTY"></td></tr>
+                <tr><th>Steuerung</th><th>Links</th><th>Rechts</th></tr>
+                <tr>
+                    <td>Motor</td>
+                    <td><a href="setOutput?relaisId=0&state=0"><button>Aus</button></a>
+                        <a href="setOutput?relaisId=0&state=1"><button>An </button></a></td>
+                    <td><a href="setOutput?relaisId=2&state=0"><button>Aus</button></a>
+                        <a href="setOutput?relaisId=2&state=1"><button>An </button></a></td>
+                </tr>
+                <tr>
+                    <td>Kühlung</td>
+                    <td><a href="setOutput?relaisId=1&state=0"><button>Aus</button></a>
+                        <a href="setOutput?relaisId=1&state=1"><button>An </button></a></td>
+                    <td><a href="setOutput?relaisId=3&state=0"><button>Aus</button></a>
+                        <a href="setOutput?relaisId=3&state=1"><button>An </button></a></td>
+                </tr>
+                <tr>
+                    <td>Kompressor</td>
+                    <td colspan="2"><a href="setOutput?relaisId=4&state=0"><button>Aus</button></a>
+                                    <a href="setOutput?relaisId=4&state=1"><button>An </button></a></td>
+                </tr>
+                <tr>
+                    <td>Lüfter</td>
+                    <td colspan="2"><a href="setOutput?relaisId=5&state=0"><button>Aus</button></a>
+                                    <a href="setOutput?relaisId=5&state=1"><button>An </button></a></td>
+                </tr>
+                <tr>
+                    <td>Relais 7</td>
+                    <td colspan="2"><a href="setOutput?relaisId=6&state=0"><button>Aus</button></a>
+                                    <a href="setOutput?relaisId=6&state=1"><button>An </button></a></td>
+                </tr>
+                <tr>
+                    <td>Relais 8</td>
+                    <td colspan="2"><a href="setOutput?relaisId=7&state=0"><button>Aus</button></a>
+                                    <a href="setOutput?relaisId=7&state=1"><button>An </button></a></td>
+                </tr>
+                <tr>
+                    <td>Aktuelle Temperatur</td>
+                    <td>REPLACE_CURTEMP_0</td>
+                    <td>REPLACE_CURTEMP_1</td>
+                </tr>
+                <tr>
+                    <td>Drehgeschwindigkeit</td>
+                    <td>REPLACE_RPM_0</td>
+                    <td>REPLACE_RPM_1</td>
+                </tr>
+                <tr>
+                    <td>Eingestellte Temperatur</td>
+                    <td><input type="number" name="temp0" step="0.1" value="REPLACE_SETTEMP_0"></td>
+                    <td><input type="number" name="temp1" step="0.1" value="REPLACE_SETTEMP_1"></td>
+                </tr>
+                <tr>
+                    <td>Kühlleistung (%)</td>
+                    <td><input type="number" name="pwmDuty0" value="REPLACE_PWMDUTY_0"></td>
+                    <td><input type="number" name="pwmDuty1" value="REPLACE_PWMDUTY_1"></td>
+                </tr>
+                <tr>
+                    <td>PWM ms</td>
+                    <td colspan="2"><input type="number" name="pwmFreq" value="REPLACE_PWMFREQ"></td>
+                </tr>
+                <tr><td><input type="submit" value="Send"></td></tr>
             </table>
-            <input type="submit" value="Send">
         </form>
     </body>
 </html>

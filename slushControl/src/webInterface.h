@@ -23,11 +23,15 @@ void initWebInterface(SlushMachine *slushMachineArr[]) {
 
     server.on("/", []() {
         String html = String(index_begin);
-        html.replace("REPLACE_TEMPERATURES", String(sms[0]->getTemperature()) + "°C<br>" + sms[1]->getTemperature() + "°C");
-        html.replace("REPLACE_RPMS", String(sms[0]->getMotorRevsPerMin()) + "RPM<br>" + sms[1]->getMotorRevsPerMin() + "RPM");
-        html.replace("REPLACE_TEMP", String(sms[0]->getSetTemperature()));
+        html.replace("REPLACE_CURTEMP_0", String(sms[0]->getTemperature()) + "°C");
+        html.replace("REPLACE_CURTEMP_1", String(sms[1]->getTemperature()) + "°C");
+        html.replace("REPLACE_RPM_0", String(sms[0]->getMotorRevsPerMin()) + "RPM");
+        html.replace("REPLACE_RPM_1", String(sms[1]->getMotorRevsPerMin()) + "RPM");
+        html.replace("REPLACE_SETTEMP_0", String(sms[0]->getSetTemperature()));
+        html.replace("REPLACE_SETTEMP_1", String(sms[1]->getSetTemperature()));
+        html.replace("REPLACE_PWMDUTY_0", String(sms[0]->maxCoolingDuty));
+        html.replace("REPLACE_PWMDUTY_1", String(sms[1]->maxCoolingDuty));
         html.replace("REPLACE_PWMFREQ", String(sms[0]->temperatureControlInterval));
-        html.replace("REPLACE_PWMDUTY", String(sms[0]->maxCoolingDuty));
 
         server.send(200, "text/html", html);
     });
@@ -57,15 +61,13 @@ void initWebInterface(SlushMachine *slushMachineArr[]) {
 
     server.on("/configValues", []() {
         // parse parameters naively and hope that it works
-        float temp = server.arg("temp").toFloat();
-        sms[0]->setTemperature(temp);
-        sms[1]->setTemperature(temp);
+        sms[0]->setTemperature(server.arg("temp0").toFloat());
+        sms[1]->setTemperature(server.arg("temp1").toFloat());
+        sms[0]->maxCoolingDuty = server.arg("pwmDuty0").toInt();
+        sms[1]->maxCoolingDuty = server.arg("pwmDuty1").toInt();
         uint32_t pwm = server.arg("pwmFreq").toInt();
         sms[0]->temperatureControlInterval = pwm;
         sms[1]->temperatureControlInterval = pwm;
-        uint32_t pwmDuty = server.arg("pwmDuty").toInt();
-        sms[0]->maxCoolingDuty = pwmDuty;
-        sms[1]->maxCoolingDuty = pwmDuty;
 
         // redirect back to home page
         server.sendHeader("Location", String("/"), true);
