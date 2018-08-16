@@ -82,8 +82,13 @@ void SlushMachine::loop() {
     }
 
     // simple bang-bang temperature control
-    if (lastTempControl + TEMP_CONTROL_WINDOW < now && coolingEnabled) {
+    if (lastTempControl + temperatureControlInterval < now && coolingEnabled) {
         lastTempControl = now;
         setValveState(avgTemp > temperatureSetPoint);
+    }
+
+    // limit cooling duty cycle
+    if(getValveState() && lastTempControl + ((temperatureControlInterval * maxCoolingDuty) / 100) < now) {
+        setValveState(false);
     }
 }

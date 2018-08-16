@@ -7,9 +7,10 @@
 #define TEMP_READ_INTERVAL      50
 #define TEMP_AVG_FACTOR         0.05
 
-#define TEMP_INIT_SETPOINT      -5
+#define TEMP_INIT_SETPOINT      6
 // time window for relais operation
 #define TEMP_CONTROL_WINDOW     10000
+#define MAX_COOLING_DUTY        20
 
 class SlushMachine {
     public:
@@ -27,6 +28,9 @@ class SlushMachine {
         void setCooling(bool state);
         void setTemperature(float temp);
         float getSetTemperature();
+
+        uint32_t temperatureControlInterval = TEMP_CONTROL_WINDOW;
+        uint8_t maxCoolingDuty = MAX_COOLING_DUTY;
 
     private:
         void checkMotor();

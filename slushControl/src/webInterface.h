@@ -26,6 +26,8 @@ void initWebInterface(SlushMachine *slushMachineArr[]) {
         html.replace("REPLACE_TEMPERATURES", String(sms[0]->getTemperature()) + "°C<br>" + sms[1]->getTemperature() + "°C");
         html.replace("REPLACE_RPMS", String(sms[0]->getMotorRevsPerMin()) + "RPM<br>" + sms[1]->getMotorRevsPerMin() + "RPM");
         html.replace("REPLACE_TEMP", String(sms[0]->getSetTemperature()));
+        html.replace("REPLACE_PWMFREQ", String(sms[0]->temperatureControlInterval));
+        html.replace("REPLACE_PWMDUTY", String(sms[0]->maxCoolingDuty));
 
         server.send(200, "text/html", html);
     });
@@ -58,6 +60,12 @@ void initWebInterface(SlushMachine *slushMachineArr[]) {
         float temp = server.arg("temp").toFloat();
         sms[0]->setTemperature(temp);
         sms[1]->setTemperature(temp);
+        uint32_t pwm = server.arg("pwmFreq").toInt();
+        sms[0]->temperatureControlInterval = pwm;
+        sms[1]->temperatureControlInterval = pwm;
+        uint32_t pwmDuty = server.arg("pwmDuty").toInt();
+        sms[0]->maxCoolingDuty = pwmDuty;
+        sms[1]->maxCoolingDuty = pwmDuty;
 
         // redirect back to home page
         server.sendHeader("Location", String("/"), true);
