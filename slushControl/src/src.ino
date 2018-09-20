@@ -39,7 +39,7 @@ void setup() {
     initOTA();
 
     // turn fan on on startup
-    shiftRegisterWrite(BIT_FAN, 1);
+    shiftRegisterWrite(BIT_FAN, 0);
 
     slushMachineLeft.init();
     slushMachineRight.init();

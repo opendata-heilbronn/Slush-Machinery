@@ -48,7 +48,7 @@ void initWebInterface(SlushMachine *slushMachineArr[]) {
                 case 2: sms[1]->setMotorState(relaisState); break;
                 case 3: sms[1]->setCooling(relaisState); break;
                 case 4: shiftRegisterWrite(BIT_COMPRESSOR, relaisState); break;
-                case 5: shiftRegisterWrite(BIT_FAN, relaisState); break;
+                case 5: shiftRegisterWrite(BIT_FAN, !relaisState); break;
                 case 6: shiftRegisterWrite(2, relaisState); break;
                 case 7: shiftRegisterWrite(1, relaisState); break;
             }
