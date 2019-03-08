@@ -18,20 +18,20 @@
 #define PIN_SR_LATCH    2
 
 // Left slush machine defines, BIT_ are pins on the shift register, PIN_ are GPIOs on the ESP32
-#define BIT_SML_MOTOR   6
-#define BIT_SML_VALVE   7
+#define BIT_SML_MOTOR   7
+#define BIT_SML_VALVE   0
 #define PIN_SML_NTC     35
 #define PIN_SML_ENCODER 36
 
 // Right slush machine defines
-#define BIT_SMR_MOTOR   4
-#define BIT_SMR_VALVE   5
+#define BIT_SMR_MOTOR   5
+#define BIT_SMR_VALVE   6
 #define PIN_SMR_NTC     32
 #define PIN_SMR_ENCODER 39
 
 #define PIN_RADIATOR_NTC    32
-#define BIT_COMPRESSOR  0
-#define BIT_FAN         3
+#define BIT_COMPRESSOR  4 //unused
+#define BIT_FAN         3 //unused
 
 // Thermistor config
 // beta coefficient of the thermistor (todo: tune)
